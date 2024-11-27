@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BirdNet-Pi MCP Server</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto px-4 py-8">
+        <div class="bg-white rounded-lg shadow-lg p-6">
+            <h1 class="text-3xl font-bold mb-4">BirdNet-Pi MCP Server</h1>
+            
+            <div class="space-y-4">
+                <!-- Server Status -->
+                <div class="p-4 bg-gray-50 rounded">
+                    <h2 class="text-xl font-semibold mb-2">Server Status</h2>
+                    <div id="serverStatus" class="text-green-600">
+                        Loading...
+                    </div>
+                </div>
+
+                <!-- Available Functions -->
+                <div class="p-4 bg-gray-50 rounded">
+                    <h2 class="text-xl font-semibold mb-2">Available Functions</h2>
+                    <div id="functionsList" class="space-y-2">
+                        Loading...
+                    </div>
+                </div>
+
+                <!-- Test Function -->
+                <div class="p-4 bg-gray-50 rounded">
+                    <h2 class="text-xl font-semibold mb-2">Test Function</h2>
+                    <div class="space-y-2">
+                        <select id="functionSelect" class="w-full p-2 border rounded">
+                            <option value="">Select a function</option>
+                        </select>
+                        <textarea id="functionParams" class="w-full p-2 border rounded h-32 font-mono" 
+                                placeholder="Enter function parameters as JSON"></textarea>
+                        <button id="executeBtn" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+                            Execute
+                        </button>
+                        <pre id="functionResult" class="bg-gray-800 text-white p-4 rounded overflow-auto hidden"></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Function definitions
+        const functions = {
+            getBirdDetections: {
+                name: 'getBirdDetections',
+                description: 'Get bird detections filtered by date range and species',
+                parameters: {
+                    startDate: 'Start date (YYYY-MM-DD)',
+                    endDate: 'End date (YYYY-MM-DD)',
+                    species: 'Optional: Filter by species name'
+                }
+            },
+            getDetectionStats: {
+                name: 'getDetectionStats',
+                description: 'Get detection statistics',
+                parameters: {
+                    period: 'Time period (day/week/month/all)',
+                    minConfidence: 'Optional: Minimum confidence threshold (0-1)'
+                }
+            },
+            getDailyActivity: {
+                name: 'getDailyActivity',
+                description: 'Get bird activity patterns throughout the day',
+                parameters: {
+                    date: 'Date to analyze (YYYY-MM-DD)',
+                    species: 'Optional: Filter by species'
+                }
+            }
+        };
+
+        // Populate function list
+        const functionsList = document.getElementById('functionsList');
+        functionsList.innerHTML = Object.values(functions)
+            .map(func => `
+                <div class="border-l-4 border-blue-500 pl-3">
+                    <h3 class="font-semibold">${func.name}</h3>
+                    <p class="text-sm text-gray-600">${func.description}</p>
+                    <div class="text-sm mt-1">
+                        Parameters:
+                        ${Object.entries(func.parameters)
+                            .map(([key, desc]) => `
+                                <div class="ml-4">
+                                    <span class="font-mono text-blue-600">${key}</span>: ${desc}
+                                </div>
+                            `).join('')}
+                    </div>
+                </div>
+            `).join('');
+
+        // Populate function select
+        const functionSelect = document.getElementById('functionSelect');
+        functionSelect.innerHTML += Object.keys(functions)
+            .map(func => `<option value="${func}">${func}</option>`)
+            .join('');
+
+        // Handle function selection
+        functionSelect.addEventListener('change', (e) => {
+            const func = functions[e.target.value];
+            if (func) {
+                const defaultParams = Object.keys(func.parameters).reduce((acc, key) => {
+                    acc[key] = '';
+                    return acc;
+                }, {});
+                document.getElementById('functionParams').value = JSON.stringify(defaultParams, null, 2);
+            }
+        });
+
+        // Update server status
+        document.getElementById('serverStatus').innerHTML = `
+            <div class="flex items-center">
+                <span class="w-3 h-3 bg-green-500 rounded-full mr-2"></span>
+                Static Demo Mode
+            </div>
+        `;
+
+        // Handle execute button
+        document.getElementById('executeBtn').addEventListener('click', () => {
+            const resultEl = document.getElementById('functionResult');
+            resultEl.classList.remove('hidden');
+            
+            try {
+                const params = JSON.parse(document.getElementById('functionParams').value);
+                const demoResponse = {
+                    status: 'success',
+                    message: 'This is a static demo. In production, this would execute: ' + 
+                            functionSelect.value + ' with parameters:',
+                    parameters: params
+                };
+                resultEl.textContent = JSON.stringify(demoResponse, null, 2);
+            } catch (error) {
+                resultEl.textContent = 'Error: Invalid JSON parameters';
+            }
+        });
+    </script>
+</body>
+</html>
