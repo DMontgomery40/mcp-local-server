@@ -1,0 +1,13 @@
+remote_theme: just-the-docs/just-the-docs
+title: BirdNet MCP Server
+description: Model Context Protocol server for BirdNet-Pi integration
+baseurl: "/mcp-local-server"
+url: "https://dmontgomery40.github.io"
+
+# Theme settings
+search_enabled: true
+heading_anchors: true
+
+aux_links:
+  "BirdNet MCP Server on GitHub":
+    - "//github.com/DMontgomery40/mcp-local-server"
