@@ -1,150 +1,102 @@
-# MCP Local Server with BirdNet-Pi Integration
+# BirdNet-Pi MCP Server
 
-A Model Context Protocol server that provides access to BirdNet-Pi data along with visualization and analysis capabilities.
+A Python-based Model Context Protocol (MCP) server for BirdNet-Pi integration.
 
 ## Features
 
-### BirdNet-Pi Integration
-- Real-time access to bird detection data
-- Audio recording retrieval
-- Advanced filtering by date, species, and confidence level
-- Statistical analysis and reporting
-- Visualization of detection patterns
+- Bird detection data retrieval with date and species filtering
+- Detection statistics and analysis
+- Audio recording access
+- Daily activity patterns
+- Report generation
 
-## Available Functions
+## Requirements
 
-### 1. getBirdDetections
-Get bird detections filtered by date range and optionally by species.
-```typescript
-{
-  startDate: string;  // ISO format (YYYY-MM-DD)
-  endDate: string;    // ISO format (YYYY-MM-DD)
-  species?: string;   // Optional species filter
-}
-```
-
-### 2. getDetectionStats
-Get detailed statistics about bird detections.
-```typescript
-{
-  period: 'day' | 'week' | 'month' | 'all';
-  minConfidence?: number;  // Optional confidence threshold (0-1)
-}
-```
-
-### 3. getAudioRecording
-Retrieve audio recordings of bird detections.
-```typescript
-{
-  filename: string;
-  format?: 'base64' | 'buffer';  // Output format (default: 'base64')
-}
-```
-
-### 4. getDailyActivity
-Analyze bird activity patterns throughout the day.
-```typescript
-{
-  date: string;       // ISO format (YYYY-MM-DD)
-  species?: string;   // Optional species filter
-}
-```
-
-### 5. generateDetectionReport
-Generate comprehensive reports with visualizations.
-```typescript
-{
-  startDate: string;  // ISO format (YYYY-MM-DD)
-  endDate: string;    // ISO format (YYYY-MM-DD)
-  format?: 'html' | 'markdown';  // Output format (default: 'html')
-}
-```
+- Python 3.8+
+- FastAPI
+- Uvicorn
+- Other dependencies listed in `requirements.txt`
 
 ## Installation
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/DMontgomery40/mcp-local-server.git
-cd mcp-local-server
+git clone https://github.com/YourUsername/mcp-server.git
+cd mcp-server
 ```
 
-2. Install dependencies:
+2. Create a virtual environment and activate it:
 ```bash
-npm install
+python -m venv venv
+source venv/bin/activate  # On Windows use: venv\Scripts\activate
 ```
 
-3. Build the project:
+3. Install dependencies:
 ```bash
-npm run build
+pip install -r requirements.txt
+```
+
+4. Set up your data directories:
+```bash
+mkdir -p data/audio data/reports
 ```
 
 ## Configuration
 
-Set the following environment variables:
-- `BIRDNET_DATA_PATH`: Path to BirdNet-Pi data directory (default: '/var/www/birdnet/data')
-- `BIRDNET_AUDIO_PATH`: Path to BirdNet-Pi audio recordings (default: '/var/www/birdnet/audio')
-- `BIRDNET_DETECTION_FILE`: Name of the detection data file (default: 'detections.json')
+The server can be configured using environment variables:
+- `BIRDNET_DETECTIONS_FILE`: Path to detections JSON file (default: 'data/detections.json')
+- `BIRDNET_AUDIO_DIR`: Path to audio files directory (default: 'data/audio')
+- `BIRDNET_REPORT_DIR`: Path to reports directory (default: 'data/reports')
 
-## Usage
+## Running the Server
 
-1. Start the server:
+Start the server:
 ```bash
-npm start
+python server.py
 ```
 
-2. Configure your MCP client (e.g., Claude Desktop) with:
-```json
-{
-  "mcpServers": {
-    "birdnet": {
-      "command": "npm",
-      "args": ["start"],
-      "cwd": "/path/to/mcp-local-server",
-      "env": {
-        "BIRDNET_DATA_PATH": "/your/custom/path/to/data"
-      }
-    }
-  }
-}
+The server will run on `http://localhost:8000`.
+
+## API Endpoints
+
+- `/functions` - List available functions (GET)
+- `/invoke` - Invoke a function (POST)
+
+### Available Functions
+
+1. `getBirdDetections`
+   - Get bird detections filtered by date range and species
+   - Parameters: startDate, endDate, species (optional)
+
+2. `getDetectionStats`
+   - Get detection statistics for a time period
+   - Parameters: period ('day', 'week', 'month', 'all'), minConfidence (optional)
+
+3. `getAudioRecording`
+   - Get audio recording for a detection
+   - Parameters: filename, format ('base64' or 'buffer')
+
+4. `getDailyActivity`
+   - Get bird activity patterns for a specific day
+   - Parameters: date, species (optional)
+
+5. `generateDetectionReport`
+   - Generate a report of detections
+   - Parameters: startDate, endDate, format ('html' or 'json')
+
+## Directory Structure
+
 ```
-
-## Development
-
-### Running Tests
-```bash
-npm test
+mcp-server/
+├── birdnet/
+│   ├── __init__.py
+│   ├── config.py
+│   ├── functions.py
+│   └── utils.py
+├── data/
+│   ├── audio/
+│   └── reports/
+├── server.py
+├── requirements.txt
+└── README.md
 ```
-
-### Building for Production
-```bash
-npm run build
-```
-
-## Visualization Examples
-
-The server provides two types of visualizations:
-
-1. Daily Activity Chart - Shows bird activity patterns throughout the day
-2. Species Distribution Chart - Shows the distribution of different bird species
-
-These can be accessed through the `generateDetectionReport` function, which produces either HTML or Markdown output.
-
-## Error Handling
-
-The server implements robust error handling:
-- File access errors return meaningful error messages
-- Invalid date ranges are properly validated
-- Missing audio files are handled gracefully
-- Configuration errors provide clear resolution steps
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Commit your changes
-4. Push to your branch
-5. Create a Pull Request
-
-## License
-
-MIT License - See LICENSE file for details

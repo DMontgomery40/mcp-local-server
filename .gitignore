@@ -1,8 +1,18 @@
-# Dependencies
-node_modules/
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+venv/
+ENV/
+*.egg-info/
+.eggs/
+pip-log.txt
 
-# Build output
+# Distribution
 dist/
+build/
+eggs/
 
 # Environment variables
 .env
@@ -10,16 +20,21 @@ dist/
 # IDE files
 .vscode/
 .idea/
+*.swp
+*.swo
 
 # Logs
 *.log
-npm-debug.log*
 
 # Test coverage
-coverage/
+.coverage
+htmlcov/
 
 # Generated files
-client-config-example.json
+data/audio/*
+data/reports/*
+!data/audio/.gitkeep
+!data/reports/.gitkeep
 
 # macOS
 .DS_Store
